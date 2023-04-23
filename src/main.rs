@@ -50,6 +50,7 @@ fn view(app: &App, model: &Model, frame: Frame) {
     let data = model.df.transpose().unwrap();
 
     for row in data.iter() {
+        let mut points = vec![];
         for (i, value) in row.iter().enumerate() {
             match value {
                 AnyValue::Float64(value) => {
@@ -66,14 +67,12 @@ fn view(app: &App, model: &Model, frame: Frame) {
                         let temperature_radius =
                             map_range(value, 0.0, 1.0, ZERO_DEGREES_RADIUS, ONE_DEGREES_RADIUS);
                         // Draw the temperature value
-                        draw.ellipse()
-                            .w(10.0)
-                            .h(10.0)
-                            .xy(polarcoords(temperature_radius, angle));
+                        points.push((polarcoords(temperature_radius, angle), WHITE));
                     }
                 }
                 _ => {}
             }
+            draw.polyline().points_colored(points.clone());
         }
     }
 
