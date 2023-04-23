@@ -72,10 +72,7 @@ fn view(app: &App, model: &Model, frame: Frame) {
         for (i, value) in data[y].iter().enumerate() {
             match value {
                 AnyValue::Float64(value) => {
-                    if i == 0 {
-                        // Draw the year label
-                        draw.text(&value.to_string());
-                    } else if i < total_months {
+                    if i > 0 && i < total_months {
                         // Map the index to an angle in radians
                         let mut angle =
                             map_range(i as f32, 1.0, months.len() as f32 + 1.0, 0.0, PI * 2.0);
@@ -93,6 +90,10 @@ fn view(app: &App, model: &Model, frame: Frame) {
             draw.polyline().points_colored(points.clone());
         }
     }
+
+    // Display current year
+    let year: f64 = data[model.yearidx].get(0).unwrap().try_extract().unwrap();
+    draw.text(&year.to_string());
 
     draw.to_frame(&app, &frame).unwrap();
 }
