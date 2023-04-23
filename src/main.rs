@@ -15,9 +15,10 @@ fn model(_app: &App) -> Model {
         .unwrap();
 
     let months = df.fields()[1..=12].to_vec();
+    let data = df.transpose().unwrap();
 
     Model {
-        df,
+        data,
         yearidx: 0,
         monthidx: 0,
         months,
@@ -25,37 +26,40 @@ fn model(_app: &App) -> Model {
 }
 
 fn event(_app: &App, model: &mut Model, _event: Event) {
-    model.monthidx += 1;
-    if model.monthidx == model.months.len() {
-        model.yearidx += 1;
-        model.monthidx = 0;
+    if model.yearidx < 143 {
+        model.monthidx += 1;
+        if model.monthidx == model.months.len() {
+            model.yearidx += 1;
+            model.monthidx = 0;
+        }
     }
 }
 
 fn view(app: &App, model: &Model, frame: Frame) {
-    let months = model.df.fields()[1..=12].to_vec();
-
     let draw = app.draw();
 
     draw.background().color(BLACK);
 
-    let data = model.df.transpose().unwrap();
-
     let mut previous_point = None;
     let mut previous_value = None;
 
-    for y in 0..=model.yearidx {
+    for y in 0..model.yearidx {
         let mut total_months = model.months.len();
         if y == model.yearidx {
             total_months = model.monthidx;
         }
 
-        for (i, value) in data[y].iter().enumerate().skip(1) {
+        for (i, value) in model.data[y].iter().enumerate().skip(1) {
             if let AnyValue::Float64(temperature) = value {
                 if i < total_months {
                     // Map the index to an angle in radians
-                    let mut angle =
-                        map_range(i as f32, 1.0, months.len() as f32 + 1.0, 0.0, PI * 2.0);
+                    let mut angle = map_range(
+                        i as f32,
+                        1.0,
+                        model.months.len() as f32 + 1.0,
+                        0.0,
+                        PI * 2.0,
+                    );
                     // Rotate back by 90 degrees to put january at the top
                     angle += PI / 2.0;
                     // Map the temperature to a radius value
@@ -95,9 +99,9 @@ fn view(app: &App, model: &Model, frame: Frame) {
         }
     }
 
-    for (i, month) in months.iter().enumerate() {
+    for (i, month) in model.months.iter().enumerate() {
         // Convert the month index to an angle in radians
-        let mut angle = map_range(i as f32, 0.0, months.len() as f32, 0.0, PI * 2.0);
+        let mut angle = map_range(i as f32, 0.0, model.months.len() as f32, 0.0, PI * 2.0);
         // Rotate back by 90 degrees to put january at the top
         angle += PI / 2.0;
         let xy = polarcoords(MONTH_LABELS_RADIUS, angle);
@@ -105,7 +109,11 @@ fn view(app: &App, model: &Model, frame: Frame) {
     }
 
     // Display current year
-    let year: f64 = data[model.yearidx].get(0).unwrap().try_extract().unwrap();
+    let year: f64 = model.data[model.yearidx]
+        .get(0)
+        .unwrap()
+        .try_extract()
+        .unwrap();
     draw.text(&year.to_string());
 
     // Render the degree rings
@@ -123,15 +131,15 @@ fn polarcoords(radius: f32, angle: f32) -> Vec2 {
 }
 
 struct Model {
-    df: DataFrame,
+    data: DataFrame,
     yearidx: usize,
     monthidx: usize,
     months: Vec<Field>,
 }
 
-const ZERO_DEGREES_RADIUS: f32 = 100.0;
-const ONE_DEGREES_RADIUS: f32 = 200.0;
-const MONTH_LABELS_RADIUS: f32 = 250.0;
+const ZERO_DEGREES_RADIUS: f32 = 200.0;
+const ONE_DEGREES_RADIUS: f32 = 400.0;
+const MONTH_LABELS_RADIUS: f32 = 500.0;
 
 #[ext]
 impl Draw {
