@@ -50,50 +50,47 @@ fn view(app: &App, model: &Model, frame: Frame) {
             total_months = model.monthidx;
         }
 
-        for (i, value) in data[y].iter().enumerate() {
-            match value {
-                AnyValue::Float64(temperature) => {
-                    if i > 0 && i < total_months {
-                        // Map the index to an angle in radians
-                        let mut angle =
-                            map_range(i as f32, 1.0, months.len() as f32 + 1.0, 0.0, PI * 2.0);
-                        // Rotate back by 90 degrees to put january at the top
-                        angle += PI / 2.0;
-                        // Map the temperature to a radius value
-                        let temperature_radius = map_range(
-                            temperature,
-                            0.0,
-                            1.0,
-                            ZERO_DEGREES_RADIUS,
-                            ONE_DEGREES_RADIUS,
+        for (i, value) in data[y].iter().enumerate().skip(1) {
+            if let AnyValue::Float64(temperature) = value {
+                if i < total_months {
+                    // Map the index to an angle in radians
+                    let mut angle =
+                        map_range(i as f32, 1.0, months.len() as f32 + 1.0, 0.0, PI * 2.0);
+                    // Rotate back by 90 degrees to put january at the top
+                    angle += PI / 2.0;
+                    // Map the temperature to a radius value
+                    let temperature_radius = map_range(
+                        temperature,
+                        0.0,
+                        1.0,
+                        ZERO_DEGREES_RADIUS,
+                        ONE_DEGREES_RADIUS,
+                    );
+
+                    let current_point = polarcoords(temperature_radius, angle);
+                    if let Some(previous_point) = previous_point {
+                        let average: f64 = (previous_value.unwrap() + temperature) / 2.0;
+
+                        let cold = vec3(0.0, 0.0, 1.0);
+                        let warm = vec3(1.0, 0.0, 0.0);
+                        let zero = vec3(1.0, 1.0, 1.0);
+
+                        let line_color = if average < 0.0 {
+                            zero.lerp(cold, abs(average as f32))
+                        } else {
+                            zero.lerp(warm, abs(average as f32))
+                        };
+
+                        draw.line().start(previous_point).end(current_point).rgb(
+                            line_color.x,
+                            line_color.y,
+                            line_color.z,
                         );
-
-                        let current_point = polarcoords(temperature_radius, angle);
-                        if let Some(previous_point) = previous_point {
-                            let average: f64 = (previous_value.unwrap() + temperature) / 2.0;
-
-                            let cold = vec3(0.0, 0.0, 1.0);
-                            let warm = vec3(1.0, 0.0, 0.0);
-                            let zero = vec3(1.0, 1.0, 1.0);
-
-                            let line_color = if average < 0.0 {
-                                zero.lerp(cold, abs(average as f32))
-                            } else {
-                                zero.lerp(warm, abs(average as f32))
-                            };
-
-                            draw.line().start(previous_point).end(current_point).rgb(
-                                line_color.x,
-                                line_color.y,
-                                line_color.z,
-                            );
-                        }
-
-                        previous_point = Some(current_point);
-                        previous_value = Some(temperature);
                     }
+
+                    previous_point = Some(current_point);
+                    previous_value = Some(temperature);
                 }
-                _ => {}
             }
         }
     }
