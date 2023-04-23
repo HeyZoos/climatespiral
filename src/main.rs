@@ -1,3 +1,9 @@
+use polars::prelude::*;
+
 fn main() {
-    println!("Hello, world!");
+    let df = CsvReader::from_path("data/giss.csv")
+        .unwrap()
+        .finish()
+        .unwrap();
+    dbg!(df);
 }
