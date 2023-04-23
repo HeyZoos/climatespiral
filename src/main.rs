@@ -16,7 +16,9 @@ fn model(_app: &App) -> Model {
     Model { df, yearidx: 0 }
 }
 
-fn event(_app: &App, _model: &mut Model, _event: Event) {}
+fn event(_app: &App, model: &mut Model, _event: Event) {
+    model.yearidx += 1;
+}
 
 fn view(app: &App, model: &Model, frame: Frame) {
     let months = model.df.fields()[1..=12].to_vec();
