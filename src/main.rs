@@ -13,19 +13,19 @@ fn model(_app: &App) -> Model {
         .finish()
         .unwrap();
 
-    let months = df.fields()[1..=12].to_vec();
-
-    Model { months }
+    Model { df }
 }
 
 fn event(_app: &App, _model: &mut Model, _event: Event) {}
 
 fn view(app: &App, model: &Model, frame: Frame) {
+    let months = model.df.fields()[1..=12].to_vec();
+
     let draw = app.draw();
 
-    for (i, month) in model.months.iter().enumerate() {
+    for (i, month) in months.iter().enumerate() {
         // Convert the month index to an angle in radians
-        let mut angle = map_range(i as f32, 0.0, model.months.len() as f32, 0.0, PI * 2.0);
+        let mut angle = map_range(i as f32, 0.0, months.len() as f32, 0.0, PI * 2.0);
         // Rotate back by 90 degrees to put january at the top
         angle += PI / 2.0;
         draw.text(month.name()).xy(polarcoords(250.0, angle));
@@ -40,5 +40,5 @@ fn polarcoords(radius: f32, angle: f32) -> Vec2 {
 }
 
 struct Model {
-    months: Vec<Field>,
+    df: DataFrame,
 }
