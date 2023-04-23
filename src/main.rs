@@ -62,7 +62,7 @@ fn view(app: &App, model: &Model, frame: Frame) {
 
     let data = model.df.transpose().unwrap();
 
-    let mut points = vec![];
+    let mut previous_value = None;
     for y in 0..=model.yearidx {
         let mut total_months = model.months.len();
         if y == model.yearidx {
@@ -81,13 +81,19 @@ fn view(app: &App, model: &Model, frame: Frame) {
                         // Map the temperature to a radius value
                         let temperature_radius =
                             map_range(value, 0.0, 1.0, ZERO_DEGREES_RADIUS, ONE_DEGREES_RADIUS);
-                        // Draw the temperature value
-                        points.push((polarcoords(temperature_radius, angle), WHITE));
+
+                        let current_point = polarcoords(temperature_radius, angle);
+                        if let Some(previous_point) = previous_value {
+                            draw.line()
+                                .start(previous_point)
+                                .end(current_point)
+                                .color(WHITE);
+                        }
+                        previous_value = Some(current_point);
                     }
                 }
                 _ => {}
             }
-            draw.polyline().points_colored(points.clone());
         }
     }
 
