@@ -35,7 +35,8 @@ fn view(app: &App, model: &Model, frame: Frame) {
 }
 
 fn polarcoords(radius: f32, angle: f32) -> Vec2 {
-    vec2(radius * angle.cos(), radius * angle.sin())
+    // Multiply by -1.0 to produce coordinates moving clockwise
+    vec2(radius * angle.cos() * -1.0, radius * angle.sin())
 }
 
 struct Model {
