@@ -13,14 +13,23 @@ fn model(_app: &App) -> Model {
         .finish()
         .unwrap();
 
-    let months = &df.fields()[1..=12];
-    dbg!(months);
+    let months = df.fields()[1..=12].to_vec();
 
-    Model {}
+    Model { months }
 }
 
 fn event(_app: &App, _model: &mut Model, _event: Event) {}
 
-fn view(_app: &App, _model: &Model, _frame: Frame) {}
+fn view(app: &App, model: &Model, frame: Frame) {
+    let draw = app.draw();
 
-struct Model {}
+    for month in model.months.iter() {
+        draw.text(month.name());
+    }
+
+    draw.to_frame(&app, &frame).unwrap();
+}
+
+struct Model {
+    months: Vec<Field>,
+}
