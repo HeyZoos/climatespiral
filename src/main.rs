@@ -23,11 +23,16 @@ fn event(_app: &App, _model: &mut Model, _event: Event) {}
 fn view(app: &App, model: &Model, frame: Frame) {
     let draw = app.draw();
 
-    for month in model.months.iter() {
-        draw.text(month.name());
+    for (i, month) in model.months.iter().enumerate() {
+        let angle = map_range(i as f32, 0.0, model.months.len() as f32, 0.0, PI * 2.0);
+        draw.text(month.name()).xy(polarcoords(250.0, angle));
     }
 
     draw.to_frame(&app, &frame).unwrap();
+}
+
+fn polarcoords(radius: f32, angle: f32) -> Vec2 {
+    vec2(radius * angle.cos(), radius * angle.sin())
 }
 
 struct Model {
