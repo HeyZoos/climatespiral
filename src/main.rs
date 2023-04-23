@@ -12,7 +12,9 @@ fn model(_app: &App) -> Model {
         .with_null_values(Some(NullValues::AllColumnsSingle("***".to_string())))
         .finish()
         .unwrap();
-    dbg!(df);
+
+    let months = &df.fields()[1..=12];
+    dbg!(months);
 
     Model {}
 }
