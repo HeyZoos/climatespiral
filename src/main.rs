@@ -1,3 +1,4 @@
+use extend::ext;
 use nannou::prelude::*;
 use polars::prelude::*;
 
@@ -38,23 +39,11 @@ fn view(app: &App, model: &Model, frame: Frame) {
 
     draw.background().color(BLACK);
 
-    // Render the degree rings
-    draw.ellipse()
-        .w(ZERO_DEGREES_RADIUS * 2.0)
-        .h(ZERO_DEGREES_RADIUS * 2.0)
-        .no_fill()
-        .stroke_weight(2.0)
-        .stroke(WHITE);
     draw.text("0°")
         .y(ZERO_DEGREES_RADIUS)
         .center_justify()
         .color(WHITE);
-    draw.ellipse()
-        .w(ONE_DEGREES_RADIUS * 2.0)
-        .h(ONE_DEGREES_RADIUS * 2.0)
-        .no_fill()
-        .stroke_weight(2.0)
-        .stroke(WHITE);
+
     draw.text("1°")
         .y(ONE_DEGREES_RADIUS)
         .center_justify()
@@ -132,6 +121,10 @@ fn view(app: &App, model: &Model, frame: Frame) {
     let year: f64 = data[model.yearidx].get(0).unwrap().try_extract().unwrap();
     draw.text(&year.to_string());
 
+    // Render the degree rings
+    draw.borderedring(ZERO_DEGREES_RADIUS);
+    draw.borderedring(ONE_DEGREES_RADIUS);
+
     draw.to_frame(&app, &frame).unwrap();
 }
 
@@ -150,3 +143,20 @@ struct Model {
 const ZERO_DEGREES_RADIUS: f32 = 100.0;
 const ONE_DEGREES_RADIUS: f32 = 200.0;
 const MONTH_LABELS_RADIUS: f32 = 210.0;
+
+#[ext]
+impl Draw {
+    fn ring(&self, radius: f32, color: Rgb8) {
+        self.ellipse()
+            .radius(radius)
+            .no_fill()
+            .stroke(color)
+            .stroke_weight(2.0);
+    }
+
+    fn borderedring(&self, radius: f32) {
+        self.ring(radius, WHITE);
+        self.ring(radius + 2.0, BLACK);
+        self.ring(radius - 2.0, BLACK);
+    }
+}
