@@ -138,8 +138,8 @@ struct Model {
 }
 
 const ZERO_DEGREES_RADIUS: f32 = 200.0;
-const ONE_DEGREES_RADIUS: f32 = 400.0;
-const MONTH_LABELS_RADIUS: f32 = 500.0;
+const ONE_DEGREES_RADIUS: f32 = 350.0;
+const MONTH_LABELS_RADIUS: f32 = 400.0;
 
 #[ext]
 impl Draw {
@@ -152,7 +152,7 @@ impl Draw {
     }
 
     fn borderedring(&self, radius: f32) {
-        self.ring(radius, WHITE);
+        self.ring(radius, YELLOW);
         self.ring(radius + 2.0, BLACK);
         self.ring(radius - 2.0, BLACK);
     }
