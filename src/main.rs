@@ -25,6 +25,20 @@ fn view(app: &App, model: &Model, frame: Frame) {
 
     draw.background().color(BLACK);
 
+    // Render the degree rings
+    draw.ellipse()
+        .w(ZERO_DEGREES_RADIUS * 2.0)
+        .h(ZERO_DEGREES_RADIUS * 2.0)
+        .no_fill()
+        .stroke_weight(2.0)
+        .stroke(WHITE);
+    draw.ellipse()
+        .w(ONE_DEGREES_RADIUS * 2.0)
+        .h(ONE_DEGREES_RADIUS * 2.0)
+        .no_fill()
+        .stroke_weight(2.0)
+        .stroke(WHITE);
+
     for (i, month) in months.iter().enumerate() {
         // Convert the month index to an angle in radians
         let mut angle = map_range(i as f32, 0.0, months.len() as f32, 0.0, PI * 2.0);
@@ -49,7 +63,10 @@ fn view(app: &App, model: &Model, frame: Frame) {
                         // Rotate back by 90 degrees to put january at the top
                         angle += PI / 2.0;
                         // Draw the temperature value
-                        draw.ellipse().w(10.0).h(10.0).xy(polarcoords(50.0, angle));
+                        draw.ellipse()
+                            .w(10.0)
+                            .h(10.0)
+                            .xy(polarcoords(ZERO_DEGREES_RADIUS, angle));
                     }
                 }
                 _ => {}
@@ -68,3 +85,6 @@ fn polarcoords(radius: f32, angle: f32) -> Vec2 {
 struct Model {
     df: DataFrame,
 }
+
+const ZERO_DEGREES_RADIUS: f32 = 75.0;
+const ONE_DEGREES_RADIUS: f32 = 150.0;
