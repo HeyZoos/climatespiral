@@ -39,16 +39,6 @@ fn view(app: &App, model: &Model, frame: Frame) {
 
     draw.background().color(BLACK);
 
-    draw.text("0°")
-        .y(ZERO_DEGREES_RADIUS)
-        .center_justify()
-        .color(WHITE);
-
-    draw.text("1°")
-        .y(ONE_DEGREES_RADIUS)
-        .center_justify()
-        .color(WHITE);
-
     for (i, month) in months.iter().enumerate() {
         // Convert the month index to an angle in radians
         let mut angle = map_range(i as f32, 0.0, months.len() as f32, 0.0, PI * 2.0);
@@ -124,6 +114,8 @@ fn view(app: &App, model: &Model, frame: Frame) {
     // Render the degree rings
     draw.borderedring(ZERO_DEGREES_RADIUS);
     draw.borderedring(ONE_DEGREES_RADIUS);
+    draw.label("0°", 0.0, ZERO_DEGREES_RADIUS, 30.0, 20.0);
+    draw.label("1°", 0.0, ONE_DEGREES_RADIUS, 30.0, 20.0);
 
     draw.to_frame(&app, &frame).unwrap();
 }
@@ -158,5 +150,10 @@ impl Draw {
         self.ring(radius, WHITE);
         self.ring(radius + 2.0, BLACK);
         self.ring(radius - 2.0, BLACK);
+    }
+
+    fn label(&self, s: &str, x: f32, y: f32, w: f32, h: f32) {
+        self.rect().x(x).y(y).w(w).h(h).color(BLACK);
+        self.text(s).x(x).y(y).center_justify().color(WHITE);
     }
 }
