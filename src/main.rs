@@ -33,6 +33,21 @@ fn view(app: &App, model: &Model, frame: Frame) {
         draw.text(month.name()).xy(polarcoords(250.0, angle));
     }
 
+    let data = model.df.transpose().unwrap();
+
+    for row in data.iter() {
+        for (i, value) in row.iter().enumerate() {
+            match value {
+                AnyValue::Float64(value) => {
+                    if i == 0 {
+                        draw.text(&value.to_string());
+                    }
+                }
+                _ => {}
+            }
+        }
+    }
+
     draw.to_frame(&app, &frame).unwrap();
 }
 
