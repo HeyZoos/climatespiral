@@ -45,19 +45,28 @@ fn view(app: &App, model: &Model, frame: Frame) {
         .no_fill()
         .stroke_weight(2.0)
         .stroke(WHITE);
+    draw.text("0°")
+        .y(ZERO_DEGREES_RADIUS)
+        .center_justify()
+        .color(WHITE);
     draw.ellipse()
         .w(ONE_DEGREES_RADIUS * 2.0)
         .h(ONE_DEGREES_RADIUS * 2.0)
         .no_fill()
         .stroke_weight(2.0)
         .stroke(WHITE);
+    draw.text("1°")
+        .y(ONE_DEGREES_RADIUS)
+        .center_justify()
+        .color(WHITE);
 
     for (i, month) in months.iter().enumerate() {
         // Convert the month index to an angle in radians
         let mut angle = map_range(i as f32, 0.0, months.len() as f32, 0.0, PI * 2.0);
         // Rotate back by 90 degrees to put january at the top
         angle += PI / 2.0;
-        draw.text(month.name()).xy(polarcoords(250.0, angle));
+        draw.text(month.name())
+            .xy(polarcoords(MONTH_LABELS_RADIUS, angle));
     }
 
     let data = model.df.transpose().unwrap();
@@ -138,5 +147,6 @@ struct Model {
     months: Vec<Field>,
 }
 
-const ZERO_DEGREES_RADIUS: f32 = 75.0;
-const ONE_DEGREES_RADIUS: f32 = 150.0;
+const ZERO_DEGREES_RADIUS: f32 = 100.0;
+const ONE_DEGREES_RADIUS: f32 = 200.0;
+const MONTH_LABELS_RADIUS: f32 = 210.0;
