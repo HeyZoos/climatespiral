@@ -13,7 +13,7 @@ fn model(_app: &App) -> Model {
         .finish()
         .unwrap();
 
-    Model { df }
+    Model { df, yearidx: 0 }
 }
 
 fn event(_app: &App, _model: &mut Model, _event: Event) {}
@@ -49,31 +49,29 @@ fn view(app: &App, model: &Model, frame: Frame) {
 
     let data = model.df.transpose().unwrap();
 
-    for row in data.iter() {
-        let mut points = vec![];
-        for (i, value) in row.iter().enumerate() {
-            match value {
-                AnyValue::Float64(value) => {
-                    if i == 0 {
-                        // Draw the year label
-                        draw.text(&value.to_string());
-                    } else {
-                        // Map the index to an angle in radians
-                        let mut angle =
-                            map_range(i as f32, 1.0, months.len() as f32 + 1.0, 0.0, PI * 2.0);
-                        // Rotate back by 90 degrees to put january at the top
-                        angle += PI / 2.0;
-                        // Map the temperature to a radius value
-                        let temperature_radius =
-                            map_range(value, 0.0, 1.0, ZERO_DEGREES_RADIUS, ONE_DEGREES_RADIUS);
-                        // Draw the temperature value
-                        points.push((polarcoords(temperature_radius, angle), WHITE));
-                    }
+    let mut points = vec![];
+    for (i, value) in data[model.yearidx].iter().enumerate() {
+        match value {
+            AnyValue::Float64(value) => {
+                if i == 0 {
+                    // Draw the year label
+                    draw.text(&value.to_string());
+                } else {
+                    // Map the index to an angle in radians
+                    let mut angle =
+                        map_range(i as f32, 1.0, months.len() as f32 + 1.0, 0.0, PI * 2.0);
+                    // Rotate back by 90 degrees to put january at the top
+                    angle += PI / 2.0;
+                    // Map the temperature to a radius value
+                    let temperature_radius =
+                        map_range(value, 0.0, 1.0, ZERO_DEGREES_RADIUS, ONE_DEGREES_RADIUS);
+                    // Draw the temperature value
+                    points.push((polarcoords(temperature_radius, angle), WHITE));
                 }
-                _ => {}
             }
-            draw.polyline().points_colored(points.clone());
+            _ => {}
         }
+        draw.polyline().points_colored(points.clone());
     }
 
     draw.to_frame(&app, &frame).unwrap();
@@ -86,6 +84,7 @@ fn polarcoords(radius: f32, angle: f32) -> Vec2 {
 
 struct Model {
     df: DataFrame,
+    yearidx: usize,
 }
 
 const ZERO_DEGREES_RADIUS: f32 = 75.0;
