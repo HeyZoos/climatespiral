@@ -39,15 +39,6 @@ fn view(app: &App, model: &Model, frame: Frame) {
 
     draw.background().color(BLACK);
 
-    for (i, month) in months.iter().enumerate() {
-        // Convert the month index to an angle in radians
-        let mut angle = map_range(i as f32, 0.0, months.len() as f32, 0.0, PI * 2.0);
-        // Rotate back by 90 degrees to put january at the top
-        angle += PI / 2.0;
-        draw.text(month.name())
-            .xy(polarcoords(MONTH_LABELS_RADIUS, angle));
-    }
-
     let data = model.df.transpose().unwrap();
 
     let mut previous_point = None;
@@ -107,6 +98,15 @@ fn view(app: &App, model: &Model, frame: Frame) {
         }
     }
 
+    for (i, month) in months.iter().enumerate() {
+        // Convert the month index to an angle in radians
+        let mut angle = map_range(i as f32, 0.0, months.len() as f32, 0.0, PI * 2.0);
+        // Rotate back by 90 degrees to put january at the top
+        angle += PI / 2.0;
+        let xy = polarcoords(MONTH_LABELS_RADIUS, angle);
+        draw.label(month.name(), xy, 30.0, 20.0);
+    }
+
     // Display current year
     let year: f64 = data[model.yearidx].get(0).unwrap().try_extract().unwrap();
     draw.text(&year.to_string());
@@ -114,8 +114,8 @@ fn view(app: &App, model: &Model, frame: Frame) {
     // Render the degree rings
     draw.borderedring(ZERO_DEGREES_RADIUS);
     draw.borderedring(ONE_DEGREES_RADIUS);
-    draw.label("0°", 0.0, ZERO_DEGREES_RADIUS, 30.0, 20.0);
-    draw.label("1°", 0.0, ONE_DEGREES_RADIUS, 30.0, 20.0);
+    draw.label("0°", vec2(0.0, ZERO_DEGREES_RADIUS), 30.0, 20.0);
+    draw.label("1°", vec2(0.0, ONE_DEGREES_RADIUS), 30.0, 20.0);
 
     draw.to_frame(&app, &frame).unwrap();
 }
@@ -134,7 +134,7 @@ struct Model {
 
 const ZERO_DEGREES_RADIUS: f32 = 100.0;
 const ONE_DEGREES_RADIUS: f32 = 200.0;
-const MONTH_LABELS_RADIUS: f32 = 210.0;
+const MONTH_LABELS_RADIUS: f32 = 250.0;
 
 #[ext]
 impl Draw {
@@ -152,8 +152,8 @@ impl Draw {
         self.ring(radius - 2.0, BLACK);
     }
 
-    fn label(&self, s: &str, x: f32, y: f32, w: f32, h: f32) {
-        self.rect().x(x).y(y).w(w).h(h).color(BLACK);
-        self.text(s).x(x).y(y).center_justify().color(WHITE);
+    fn label(&self, s: &str, xy: Vec2, w: f32, h: f32) {
+        self.rect().xy(xy).w(w).h(h).color(BLACK);
+        self.text(s).xy(xy).center_justify().color(WHITE);
     }
 }
