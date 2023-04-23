@@ -13,11 +13,22 @@ fn model(_app: &App) -> Model {
         .finish()
         .unwrap();
 
-    Model { df, yearidx: 0 }
+    let months = df.fields()[1..=12].to_vec();
+
+    Model {
+        df,
+        yearidx: 0,
+        monthidx: 0,
+        months,
+    }
 }
 
 fn event(_app: &App, model: &mut Model, _event: Event) {
-    model.yearidx += 1;
+    model.monthidx += 1;
+    if model.monthidx == model.months.len() {
+        model.yearidx += 1;
+        model.monthidx = 0;
+    }
 }
 
 fn view(app: &App, model: &Model, frame: Frame) {
@@ -53,13 +64,18 @@ fn view(app: &App, model: &Model, frame: Frame) {
 
     let mut points = vec![];
     for y in 0..=model.yearidx {
+        let mut total_months = model.months.len();
+        if y == model.yearidx {
+            total_months = model.monthidx;
+        }
+
         for (i, value) in data[y].iter().enumerate() {
             match value {
                 AnyValue::Float64(value) => {
                     if i == 0 {
                         // Draw the year label
                         draw.text(&value.to_string());
-                    } else {
+                    } else if i < total_months {
                         // Map the index to an angle in radians
                         let mut angle =
                             map_range(i as f32, 1.0, months.len() as f32 + 1.0, 0.0, PI * 2.0);
@@ -89,6 +105,8 @@ fn polarcoords(radius: f32, angle: f32) -> Vec2 {
 struct Model {
     df: DataFrame,
     yearidx: usize,
+    monthidx: usize,
+    months: Vec<Field>,
 }
 
 const ZERO_DEGREES_RADIUS: f32 = 75.0;
