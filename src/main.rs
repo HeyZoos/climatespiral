@@ -24,7 +24,10 @@ fn view(app: &App, model: &Model, frame: Frame) {
     let draw = app.draw();
 
     for (i, month) in model.months.iter().enumerate() {
-        let angle = map_range(i as f32, 0.0, model.months.len() as f32, 0.0, PI * 2.0);
+        // Convert the month index to an angle in radians
+        let mut angle = map_range(i as f32, 0.0, model.months.len() as f32, 0.0, PI * 2.0);
+        // Rotate back by 90 degrees to put january at the top
+        angle += PI / 2.0;
         draw.text(month.name()).xy(polarcoords(250.0, angle));
     }
 
