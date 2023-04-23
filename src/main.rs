@@ -62,11 +62,14 @@ fn view(app: &App, model: &Model, frame: Frame) {
                             map_range(i as f32, 1.0, months.len() as f32 + 1.0, 0.0, PI * 2.0);
                         // Rotate back by 90 degrees to put january at the top
                         angle += PI / 2.0;
+                        // Map the temperature to a radius value
+                        let temperature_radius =
+                            map_range(value, 0.0, 1.0, ZERO_DEGREES_RADIUS, ONE_DEGREES_RADIUS);
                         // Draw the temperature value
                         draw.ellipse()
                             .w(10.0)
                             .h(10.0)
-                            .xy(polarcoords(ZERO_DEGREES_RADIUS, angle));
+                            .xy(polarcoords(temperature_radius, angle));
                     }
                 }
                 _ => {}
