@@ -40,7 +40,16 @@ fn view(app: &App, model: &Model, frame: Frame) {
             match value {
                 AnyValue::Float64(value) => {
                     if i == 0 {
+                        // Draw the year label
                         draw.text(&value.to_string());
+                    } else {
+                        // Map the index to an angle in radians
+                        let mut angle =
+                            map_range(i as f32, 1.0, months.len() as f32 + 1.0, 0.0, PI * 2.0);
+                        // Rotate back by 90 degrees to put january at the top
+                        angle += PI / 2.0;
+                        // Draw the temperature value
+                        draw.ellipse().w(10.0).h(10.0).xy(polarcoords(50.0, angle));
                     }
                 }
                 _ => {}
