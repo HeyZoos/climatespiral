@@ -291,6 +291,7 @@ dependencies = [
 name = "climatespiral"
 version = "0.1.0"
 dependencies = [
+ "extend",
  "nannou",
  "polars",
 ]
@@ -773,6 +774,17 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "87f253bc5c813ca05792837a0ff4b3a580336b224512d48f7eda1d7dd9210787"
 dependencies = [
  "num-traits",
+]
+
+[[package]]
+name = "extend"
+version = "1.2.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "311a6d2f1f9d60bff73d2c78a0af97ed27f79672f15c238192a5bbb64db56d00"
+dependencies = [
+ "proc-macro2",
+ "quote",
+ "syn 2.0.15",
 ]
 
 [[package]]

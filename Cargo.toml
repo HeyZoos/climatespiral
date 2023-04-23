@@ -6,5 +6,6 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+extend = "1.2.0"
 nannou = "0.18.1"
 polars = "0.28.0"
