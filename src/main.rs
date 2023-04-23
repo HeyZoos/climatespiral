@@ -23,6 +23,8 @@ fn view(app: &App, model: &Model, frame: Frame) {
 
     let draw = app.draw();
 
+    draw.background().color(BLACK);
+
     for (i, month) in months.iter().enumerate() {
         // Convert the month index to an angle in radians
         let mut angle = map_range(i as f32, 0.0, months.len() as f32, 0.0, PI * 2.0);
